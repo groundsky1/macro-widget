@@ -1,0 +1,27 @@
+{
+  "updated_at_utc": "2026-08-03 15:00 UTC",
+  "updated_at_kst": "2026-08-04 00:00 KST",
+  "indicators": [
+    {
+      "key": "us10y",
+      "name": "미국 10년물 국채금리",
+      "value": "0.47%",
+      "change": "-1bp",
+      "direction": "down"
+    },
+    {
+      "key": "usdkrw",
+      "name": "원/달러 환율",
+      "value": "1,428.9원",
+      "change": "+8.3 (+0.58%)",
+      "direction": "up"
+    },
+    {
+      "key": "wti",
+      "name": "WTI 국제유가",
+      "value": "$79.42",
+      "change": "-5.25 (-6.20%)",
+      "direction": "down"
+    }
+  ]
+}
