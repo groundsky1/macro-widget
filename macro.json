@@ -1,6 +1,6 @@
 {
-  "updated_at_utc": "2026-08-03 15:00 UTC",
-  "updated_at_kst": "2026-08-04 00:00 KST",
+  "updated_at_utc": "2026-08-03 22:52 UTC",
+  "updated_at_kst": "2026-08-04 07:52 KST",
   "indicators": [
     {
       "key": "us10y",
@@ -19,8 +19,8 @@
     {
       "key": "wti",
       "name": "WTI 국제유가",
-      "value": "$79.42",
-      "change": "-5.25 (-6.20%)",
+      "value": "$79.96",
+      "change": "-4.71 (-5.56%)",
       "direction": "down"
     }
   ]
