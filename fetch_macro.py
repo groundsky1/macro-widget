@@ -1,20 +1,19 @@
 """
 매크로 3대 지표(미 10년물 국채금리 / 원달러 환율 / WTI 유가)를
-FRED(세인트루이스 연방준비은행 공식 통계)에서 가져와 macro.json으로 저장하는 스크립트.
+FRED 공식 REST API에서 가져와 macro.json으로 저장하는 스크립트.
 
-야후 파이낸스 대신 FRED를 쓰는 이유:
-- 10년물 금리(^TNX)는 야후에서 가끔 배율(x10) 없이 값이 내려와 오작동하는 경우가 있음
-- WTI 선물(CL=F)은 월물 롤오버 시점에 실제 가격변동과 무관하게 몇 % 급변하는 문제가 있음
-FRED는 두 문제 모두 없는 공식 일별 통계치를 제공함 (단, 발표가 하루 정도 지연될 수 있음).
+* fredgraph.csv(차트용 export)는 CDN에 캐싱되어 며칠씩 오래된 값이
+  섞여 나오는 문제가 있어, 캐시를 거치지 않는 공식 API를 사용합니다.
+* API 키는 환경변수 FRED_API_KEY로 전달합니다 (GitHub Actions Secret).
+  무료 발급: https://fredaccount.stlouisfed.org/apikeys
 
 GitHub Actions에서 매일 자동 실행되며, 결과 파일(macro.json)을
 raw.githubusercontent.com URL로 티스토리 위젯에서 읽어옵니다.
 """
 
-import csv
-import io
 import json
 import os
+import sys
 import time
 from datetime import datetime, timezone, timedelta
 
@@ -22,7 +21,7 @@ import requests
 
 KST = timezone(timedelta(hours=9))
 
-FRED_CSV_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={series}"
+FRED_API_URL = "https://api.stlouisfed.org/fred/series/observations"
 
 # FRED 시리즈 ID
 # DGS10      : 미국 10년물 국채수익률 (%, 일별)
@@ -35,25 +34,31 @@ SERIES = {
 }
 
 
-def fetch_last_two_values(series: str, retries: int = 3, delay: int = 5):
-    """FRED CSV에서 결측치(".")를 건너뛰고 최근 유효값 2개를 (날짜, 값) 튜플로 반환.
-    끝까지 실패하면 None, None."""
-    url = FRED_CSV_URL.format(series=series)
+def fetch_last_two_values(series: str, api_key: str, retries: int = 3, delay: int = 5):
+    """FRED 공식 API에서 결측치(".")를 건너뛰고 최근 유효값 2개를
+    (날짜, 값) 튜플로 반환. 끝까지 실패하면 None, None."""
+    params = {
+        "series_id": series,
+        "api_key": api_key,
+        "file_type": "json",
+        "sort_order": "desc",
+        "limit": 10,
+    }
     for attempt in range(retries):
         try:
-            resp = requests.get(url, timeout=15)
+            resp = requests.get(FRED_API_URL, params=params, timeout=15)
             resp.raise_for_status()
-            reader = csv.reader(io.StringIO(resp.text))
-            rows = list(reader)
+            obs = resp.json().get("observations", [])
             valid = [
-                (r[0], float(r[1]))
-                for r in rows[1:]
-                if len(r) == 2 and r[1] not in ("", ".")
+                (o["date"], float(o["value"]))
+                for o in obs
+                if o.get("value") not in (None, "", ".")
             ]
             if len(valid) >= 2:
-                return valid[-1], valid[-2]
-        except Exception:
-            pass
+                # sort_order=desc이므로 valid[0]이 최신, valid[1]이 그 직전
+                return valid[0], valid[1]
+        except Exception as e:
+            print(f"[warn] {series} fetch attempt {attempt + 1} failed: {e}", file=sys.stderr)
         if attempt < retries - 1:
             time.sleep(delay)
     return None, None
@@ -74,8 +79,8 @@ def load_previous_indicator(key: str):
     return None
 
 
-def build_indicator(key: str, meta: dict) -> dict:
-    last, prev = fetch_last_two_values(meta["series"])
+def build_indicator(key: str, meta: dict, api_key: str) -> dict:
+    last, prev = fetch_last_two_values(meta["series"], api_key)
 
     if last is None:
         old = load_previous_indicator(key)
@@ -116,13 +121,18 @@ def build_indicator(key: str, meta: dict) -> dict:
         "value": value_str,
         "change": change_str,
         "direction": direction,
-        "as_of": last_date,   # 실제 데이터 기준일 (FRED 발표 기준)
+        "as_of": last_date,
         "stale": False,
     }
 
 
 def main():
-    indicators = [build_indicator(k, v) for k, v in SERIES.items()]
+    api_key = os.environ.get("FRED_API_KEY")
+    if not api_key:
+        print("[error] 환경변수 FRED_API_KEY가 설정되어 있지 않습니다.", file=sys.stderr)
+        sys.exit(1)
+
+    indicators = [build_indicator(k, v, api_key) for k, v in SERIES.items()]
 
     now_utc = datetime.now(timezone.utc)
     now_kst = now_utc.astimezone(KST)
