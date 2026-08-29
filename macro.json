@@ -1,14 +1,14 @@
 {
-  "updated_at_utc": "2026-08-28 05:52 UTC",
-  "updated_at_kst": "2026-08-28 14:52 KST",
+  "updated_at_utc": "2026-08-29 03:25 UTC",
+  "updated_at_kst": "2026-08-29 12:25 KST",
   "indicators": [
     {
       "key": "us10y",
       "name": "미국 10년물 국채금리",
-      "value": "4.66%",
-      "change": "+2bp",
+      "value": "4.67%",
+      "change": "+1bp",
       "direction": "up",
-      "as_of": "2026-08-26",
+      "as_of": "2026-08-27",
       "stale": false
     },
     {
