@@ -1,23 +1,23 @@
 {
-  "updated_at_utc": "2026-09-20 23:42 UTC",
-  "updated_at_kst": "2026-09-21 08:42 KST",
+  "updated_at_utc": "2026-09-22 00:23 UTC",
+  "updated_at_kst": "2026-09-22 09:23 KST",
   "indicators": [
     {
       "key": "us10y",
       "name": "미국 10년물 국채금리",
-      "value": "4.94%",
-      "change": "-7bp",
-      "direction": "down",
-      "as_of": "2026-09-17",
+      "value": "5.01%",
+      "change": "+7bp",
+      "direction": "up",
+      "as_of": "2026-09-18",
       "stale": false
     },
     {
       "key": "usdkrw",
       "name": "원/달러 환율",
-      "value": "1,340.3원",
-      "change": "-5.33 (-0.40%)",
-      "direction": "down",
-      "as_of": "2026-09-11",
+      "value": "1,388.0원",
+      "change": "+7.51 (+0.54%)",
+      "direction": "up",
+      "as_of": "2026-09-18",
       "stale": false
     },
     {
