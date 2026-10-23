@@ -1,15 +1,15 @@
 {
-  "updated_at_utc": "2026-10-22 00:19 UTC",
-  "updated_at_kst": "2026-10-22 09:19 KST",
+  "updated_at_utc": "2026-10-23 00:14 UTC",
+  "updated_at_kst": "2026-10-23 09:14 KST",
   "indicators": [
     {
       "key": "us10y",
       "name": "미국 10년물 국채금리",
-      "value": "5.15%",
-      "change": "+6bp",
+      "value": "5.13%",
+      "change": "+1bp",
       "direction": "up",
-      "as_of": "2026-10-19",
-      "stale": true
+      "as_of": "2026-10-21",
+      "stale": false
     },
     {
       "key": "usdkrw",
@@ -18,16 +18,16 @@
       "change": "-9.28 (-0.69%)",
       "direction": "down",
       "as_of": "2026-10-16",
-      "stale": true
+      "stale": false
     },
     {
       "key": "wti",
       "name": "WTI 국제유가",
-      "value": "$101.91",
-      "change": "+1.05 (+1.04%)",
-      "direction": "up",
-      "as_of": "2026-10-14",
-      "stale": true
+      "value": "$107.89",
+      "change": "-2.12 (-1.93%)",
+      "direction": "down",
+      "as_of": "2026-10-20",
+      "stale": false
     }
   ]
 }
